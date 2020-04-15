@@ -1,0 +1,245 @@
+{% extends "_layout.html" %}
+<!doctype html>
+<html lang="en">
+{% block content %}
+<br><br>
+<h2 id ="month" style="text-align: center; color:#191970;"></h2>
+
+<p><i style="color:green; font-size:19px">* Cliquez sur une barre pour plus de détails </i></p>
+<div id="chartContainer" style="width: 90%; height: 300px;display: inline-block;"></div>
+<div id="chartLoc" style="width: 90%; height: 300px;display: inline-block;"></div>
+<div id="chartRatio" style="width: 90%; height: 300px;display: inline-block;"></div><br/><br/>
+<h1 style="font: bold">Marketplace </h1>  <br/><br/>
+<div id="chart_vente" style="width: 45%; height: 300px;display: inline-block;"></div>
+<div id="chart_loc" style="width: 45%; height: 300px;display: inline-block;"></div>
+<div id="chart_mark" style="width: 92%; height: 300px;display: inline-block;"></div>
+      <br><br>  <br><br> <br><br> <br>
+
+<style>
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size:16px;
+  margin: 4px 2px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  cursor: pointer;
+  
+  }
+
+.button1 {
+background-color: white;
+color: black;
+border: 2px solid #555555;
+}
+
+.button1:hover {
+background-color: #555555;
+color: white;
+}
+</style>
+<button class="button button1" style="font-size:30px;"><a href={{ url_for('next',id=current_id+1) }}>Extraction suivante</a></button>
+<!-- Graphs -->
+<script type="text/javascript">
+var url=window.location.href;
+if (url=="https://logis.herokuapp.com/" || url=="https://logis.herokuapp.com/next/0"|| url=="http://127.0.0.1:5000/" || url=="http://127.0.0.1:5000/next/0" ){
+	document.getElementById("month").innerHTML="Juillet";
+}
+if (url=="https://logis.herokuapp.com/next/1" || url=="http://127.0.0.1:5000/next/1"){
+	document.getElementById("month").innerHTML="Aout";
+}
+window.onload = function () {
+     CanvasJS.addColorSet("greenShades",
+        [//colorSet Array
+            "#0F2043",
+			"#79CEDC",
+            "#D5A458"
+            
+            ]);
+	var chart = new CanvasJS.Chart("chartContainer", {
+		theme: "theme3",
+		
+		title:{
+			text: "Prix par m2 en Vente"              
+		},
+      axisY:{    
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND",
+		gridThickness: .2
+		},
+		data: [              
+		{
+     	type: "column",
+         cursor:"pointer",
+		 color: "#34dbcb",
+	     legendText:"Cliquez pour plus de détails",
+          showInLegend: true,
+         click: onClick, 
+			dataPoints:[
+            {% for d in data_points %} 
+                { label:"{{d.label}}",  y: {{d.y}},href: "{{d.url}}",color:"{{d.color}}" },
+            {%endfor%}
+            ]
+	}
+]
+	});
+chart.render();
+function onClick(e){
+//  	console.log(e.dataPoint.href) 
+     window.open(e.dataPoint.href,'_blank');  
+};
+ 	/*document.getElementById("exportChart").addEventListener("click",function(){
+    	chart.exportChart({format: "jpg"});
+    }); */ 
+
+	//****************************************************************************
+var chart_loc = new CanvasJS.Chart("chartLoc", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en Location "              
+		},
+         axisY:{    
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND",
+		gridThickness: .2
+		},
+		data: [              
+		{
+   		  color: "#34dbcb",
+	      legendText:"Cliquez pour plus de détails",
+          showInLegend: true,
+			type: "column",
+			cursor:"pointer",
+      		click: onClick, 
+			dataPoints:[
+            {% for d in data_points_loc %} 
+                { label:"{{d.label}}",  y: {{d.y}} ,href: "{{d.url}}",color:"{{d.color}}"},
+            {%endfor%}
+            ]
+
+		}
+		]
+	});
+  
+	chart_loc.render();
+  function onClick(e){
+     	console.log(e.dataPoint.href) 
+        window.open(e.dataPoint.href,'_blank');  
+};
+ 	/*document.getElementById("exportChartLoc").addEventListener("click",function(){
+    	chart.exportChart({format: "jpg"});
+    }); */
+
+var chart_loc = new CanvasJS.Chart("chartRatio", {
+    theme: "theme8",
+	title:{
+		text: "Prix par m2 en Ratio"              
+		},
+    axisY:{    
+		gridThickness: .1
+		},
+	data: [              
+	{ 
+	    color: "#0074D9",
+		type: "column",
+		dataPoints:[
+        {% for d in data_points_ratio %} 
+            { label:"{{d.label}}",  y: {{d.y}} },
+        {%endfor%}
+       ]
+	}
+	]
+    });  
+chart_loc.render();
+ 	/*document.getElementById("exportChartRatio").addEventListener("click",function(){
+    	chart.exportChart({format: "jpg"});
+    }); */
+
+//************************************************************************
+//ATLA3 ILFOU9
+var chart = new CanvasJS.Chart("chart_vente", {
+	animationEnabled: true,
+	colorSet: "greenShades",
+	title: {
+		text: "Vente"
+	},
+  /*height:260,
+  width:200,*/
+
+	data: [{
+		//color: "LightSeaGreen",
+		type: "pie",
+		startAngle: 40,
+		yValueFormatString: "##0.00\"%\"",
+		indexLabel: "{label}",
+		dataPoints: [
+        {% for d in data_points_mark_vente %} 
+            {label:"{{d.label}}",  y: {{d.y}}  },
+        {%endfor%}
+		]
+	}]
+});
+chart.render();
+
+
+//*********************************************************************************
+var chart = new CanvasJS.Chart("chart_loc", {
+	animationEnabled: true,
+	colorSet: "greenShades",
+	title: {
+		text: "Location"
+	},
+	data: [{
+		//color: "LightSeaGreen",
+		type: "pie",
+		startAngle: 240,
+		yValueFormatString: "##0.00\"%\"",
+		indexLabel: "{label}",
+		dataPoints: [
+        {% for d in data_points_mark_loc %} 
+            { label:"{{d.label}}",  y: {{d.y}} },
+        {%endfor%}
+		]
+	}]
+});
+chart.render();
+
+//***********************************************************************
+var chart = new CanvasJS.Chart("chart_mark", {
+	animationEnabled: true,
+	colorSet: "greenShades",
+	title: {
+		text: "Vente et location"
+	},
+
+	data: [{
+		//color: "LightSeaGreen",
+		type: "pie",
+		startAngle: 240,
+		yValueFormatString: "##0.00\"%\"",
+		indexLabel: "{label}",
+		dataPoints: [
+        {% for d in data_points_mark_all %} 
+            { label:"{{d.label}}",  y: {{d.y}} },
+        {%endfor%}
+		]
+	}]
+});
+chart.render();
+}
+</script>
+  <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+ <br>
+ <br>
+ 
+ <br>
+ <br>
+
+{%endblock%}

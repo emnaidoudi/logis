@@ -1,0 +1,145 @@
+{% extends "_layout.html" %}
+<!doctype html>
+<html lang="en">
+{%block content%}
+
+<div id="chartContainer" style="width: 45%; height: 300px;display: inline-block;"></div>
+<div id="chartContainer2" style="width: 45%; height: 300px;display: inline-block;"></div>
+<button class="button button1" style="width: 45%;" id="exportChart1">Export Chart</button>
+<button class="button button1" style="width: 45%;" id="exportChart2">Export Chart</button>
+<br><br>
+<div id="chartLoc" style="width: 45%; height: 300px;display: inline-block;"></div>
+<div id="chartLoc2" style="width: 45%; height: 300px;display: inline-block;"></div>
+<button class="button button1" style="width: 45%;" id="exportChart3">Export Chart</button>
+<button class="button button1" style="width: 45%;" id="exportChart4">Export Chart</button>
+
+<br><br>  <br><br> <br><br> <br>
+    <!-- Graphs -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>   
+<script type="text/javascript">
+window.onload = function () {
+	var chart = new CanvasJS.Chart("chartContainer", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en vente JUILLET"              
+		},
+   // axisY: { maximum: 40000 },
+      axisY:{ 
+          gridThickness: .1  , 
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND"},
+		data: [              
+		{
+        color: "#0074D9",
+        type: "column",
+		dataPoints:[
+            {% for d in data_points %} 
+                { label:"{{d.label}}",  y: {{d.y}} },
+            {%endfor%}
+            ]
+	}
+		]
+	});
+	chart.render();
+	document.getElementById("exportChart1").addEventListener("click",function(){
+    	chart.exportChart({format: "jpg"});
+    }); 
+
+	var chart2 = new CanvasJS.Chart("chartContainer2", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en vente Aout"              
+		},
+   // axisY: { maximum: 40000 },
+      axisY:{ 
+          gridThickness: .1  , 
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND"},
+		data: [              
+		{
+        color: "#0074D9",
+        type: "column",
+        dataPoints:[
+            {% for d in data_points1 %} 
+                { label:"{{d.label}}",  y: {{d.y}}},
+            {%endfor%}
+            ]
+
+		}
+		]
+	});
+	chart2.render(); 
+	document.getElementById("exportChart2").addEventListener("click",function(){
+    	chart2.exportChart({format: "jpg"});
+    }); 
+
+var chart_loc = new CanvasJS.Chart("chartLoc", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en Location JUILLET "              
+		},
+        axisY:{ 
+         gridThickness: .1  ,    
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND"},
+		data: [              
+		{
+            color: "#0074D9",
+    		type: "column",
+			dataPoints:[
+            {% for d in data_points_loc %} 
+                { label:"{{d.label}}",  y: {{d.y}} },
+            {%endfor%}
+            ]
+
+		}
+		]
+	});
+	chart_loc.render();
+	document.getElementById("exportChart3").addEventListener("click",function(){
+    	chart_loc.exportChart({format: "jpg"});
+    }); 
+
+    var chart_loc2 = new CanvasJS.Chart("chartLoc2", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en Location Aout "              
+		},
+        axisY:{ 
+         gridThickness: .1  ,    
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND"},
+		data: [              
+		{
+            color: "#0074D9",
+    		type: "column",
+			dataPoints:[
+            {% for d in data_points_loc1 %} 
+                { label:"{{d.label}}",  y: {{d.y}} },
+            {%endfor%}
+            ]
+
+		}
+		]
+	});
+	chart_loc2.render();
+	document.getElementById("exportChart4").addEventListener("click",function(){
+    	chart2.exportChart({format: "jpg"});
+    }); 
+ 
+}
+</script>
+  <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<br>
+ <br>
+ 
+ <br>
+ <br>
+
+{%endblock%}
+

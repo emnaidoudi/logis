@@ -1,0 +1,203 @@
+{% extends "_layout.html" %}
+<!doctype html>
+<html lang="en">
+{%block content%}
+<br><br>
+<div id="chartContainer" style="width: 45%; height: 300px;display: inline-block;"></div>
+<div id="chartLoc" style="width: 45%; height: 300px;display: inline-block;"></div>
+<br><br>
+<button class="button button1" style="width: 45%;" id="exportChart">Export Chart</button>
+<button class="button button1" style="width: 45%;" id="exportChartLoc">Export Chart</button>
+<br><br><br>
+
+<style>
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size:16px;
+  margin: 4px 2px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  cursor: pointer;
+  
+  }
+
+.button1 {
+background-color: white;
+color: black;
+border: 2px solid #555555;
+}
+
+.button1:hover {
+background-color: #555555;
+color: white;
+}
+td{
+    font-size:18.5px;
+}
+</style>
+{% set green="#b2ffb2" %}
+{% set red="#ff3333" %}
+<table  class="table" id="myTable">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Zone</th>
+      <th scope="col">Annonce en vente </th>
+      <th scope="col">Annonce en location</th>
+      <th scope="col">Prix/Size en vente</th>
+      <th scope="col">Prix/Size en location</th>
+    </tr>
+  </thead>
+<tr>
+<td>
+{% for d in data_ann.list_countries%}
+
+    <table  class="table" id="myTable">
+        <tbody>
+            <tr>
+                <td>{{d}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endfor %}    
+</td>
+<td>
+{% for av in data_ann.ann_vente%}
+    <table class="table" id="myTable">
+        <tbody>
+            <tr>
+                <td>{{av}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endfor %} 
+</td>
+<td>
+{% for av in data_ann.ann_loc%}
+    <table  class="table" id="myTable">
+        <tbody>
+            <tr>
+                <td>{{av}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endfor %} 
+</td>
+<td>
+{% for av in data_ann.prix%}
+{% if av > data_ann.mean_vente %}
+{% set color = red%}
+{% else %}
+{% set color = green%}
+{% endif %}
+    <table  class="table" id="myTable">
+        <tbody>
+            <tr>
+                <td bgcolor={{color}}>{{av}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endfor %} 
+</td>
+<td>
+{% for av in data_ann.prixl%}
+{% if av > data_ann.mean_loc %}
+{% set color = red %}
+{% else %}
+{% set color = green %}
+{% endif %}
+    <table  class="table" id="myTable">
+        <tbody>
+            <tr>
+                <td bgcolor={{color}}>{{av}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endfor %} 
+</td>
+</tr>
+</table>
+
+<p>* La couleur rouge représente les prix supérieurs au seuil.</p>
+<p>* La couleur verte représente les prix inferieurs au seuil.</p>
+
+<script type="text/javascript">
+window.onload = function () {
+	//addRows();
+	var chart1 = new CanvasJS.Chart("chartContainer", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en Vente"              
+		},
+   // axisY: { maximum: 40000 },
+      axisY:{ 
+          gridThickness: .1  , 
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND"},
+		data: [              
+		{
+        color: "#0074D9",
+        type: "column",
+        cursor:"pointer",
+        click: onClick, 
+			dataPoints:[
+            {% for d in data_points %} 
+               { label:"{{d.label}}",  y: {{d.y}},href: "{{d.url}}" },
+            {%endfor%}
+            ]
+		}
+		]
+	});
+	chart1.render();
+
+  function onClick(e){
+         window.open(e.dataPoint.href,'_blank');  
+};
+document.getElementById("exportChart").addEventListener("click",function(){
+    	chart1.exportChart({format: "jpg"});
+    });  
+var chart_loc = new CanvasJS.Chart("chartLoc", {
+		theme: "theme3",
+		title:{
+			text: "Prix par m2 en Location "              
+		},
+        axisY:{ 
+         gridThickness: .1  ,    
+        /*valueFormatString:  "#,##0.##", // move comma to change formatting
+        prefix: "TND"*/
+		title:"TND"},
+		data: [              
+		{
+            color: "#0074D9",
+    		type: "column",
+			dataPoints:[
+            {% for d in data_points_loc %} 
+                { label:"{{d.label}}",  y: {{d.y}} },
+            {%endfor%}
+            ]
+		}
+		]
+	});
+  
+	chart_loc.render();
+ 	document.getElementById("exportChartLoc").addEventListener("click",function(){
+    	chart_loc.exportChart({format: "jpg"});
+    }); 
+ 
+}
+  
+
+</script>
+
+  <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+
+
+
+{%endblock%}
